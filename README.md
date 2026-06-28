@@ -29,6 +29,33 @@ right-hand **iTerm2 browser pane** instead. Same live reload, same renderer, but
 
 ---
 
+## Showcase
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/live-editing.gif" alt="Edits in Neovim reflected live in the preview pane" width="100%"><br>
+      <sub><b>Live editing</b> — type in Neovim, the preview updates instantly.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/scroll-in-neovim.gif" alt="Scrolling in Neovim keeps the preview in sync" width="100%"><br>
+      <sub><b>Scroll sync</b> — move through the buffer and the preview follows.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/scroll.gif" alt="Scrolling the preview pane" width="100%"><br>
+      <sub><b>Scroll the preview</b> — read long docs right in the split.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/stop.gif" alt="Stopping the preview closes the pane and server" width="100%"><br>
+      <sub><b>Clean teardown</b> — <code>:ItermMdPreviewStop</code> closes the pane and the server.</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
 ## Why you'll like it
 
 - 🪟 **No more stray browser windows.** The preview is a pane, not an app you have to alt-tab to.
@@ -95,15 +122,22 @@ The preview pane is just an iTerm **Browser-type** profile. You create it once:
 
 1. **iTerm → Settings → Profiles → `+`** (create new profile).
 2. Set **Profile Type → Browser**.
-3. Name it **`Browser`** (default). 
-4. Under **General → Custom URL**, paste `file:///tmp/iterm-preview.html`.
-5. Run **`:checkhealth iterm-preview`** 
+3. Name it **`Browser`** (default).
+4. Under **General → Custom URL**, paste this exact value, with no trailing space or period:
+
+   ```
+   file:///tmp/iterm-preview.html
+   ```
+
+5. Run **`:checkhealth iterm-preview`** to confirm the profile URL matches.
 
 First `:ItermMdPreview` triggers a one-time macOS Automation prompt. Click **OK** to let your
 terminal drive iTerm.
 
-> Not sure you got step 4 right? `:checkhealth iterm-preview` prints the precise
-> `file://…` string your profile should use. Copy it from there.
+> Not sure you got step 4 right? `:checkhealth iterm-preview` reads the URL your profile
+> actually has, compares it to the one the plugin needs, and if they differ it prints the
+> exact value to paste. A stray trailing space or period is the usual culprit behind a
+> blank pane that never loads.
 
 ---
 

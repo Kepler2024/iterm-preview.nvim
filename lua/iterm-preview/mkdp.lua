@@ -10,7 +10,10 @@ end
 
 function M.install(opts)
   ensure_vim_func()
-  if vim.g.mkdp_port == nil then vim.g.mkdp_port = opts.port end
+  -- mkdp's own plugin file initializes g:mkdp_port to an empty string (which it
+  -- treats as "pick a free port at random"), so a plain `== nil` guard never
+  -- fires and the configured port is silently ignored. Treat "" as unset too.
+  if vim.g.mkdp_port == nil or vim.g.mkdp_port == "" then vim.g.mkdp_port = opts.port end
   if vim.g.mkdp_filetypes == nil then vim.g.mkdp_filetypes = opts.filetypes end
   vim.g.mkdp_browserfunc = "ItermMdpreviewBrowserFunc"
   vim.g.mkdp_auto_close = 1

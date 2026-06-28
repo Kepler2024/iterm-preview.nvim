@@ -8,6 +8,10 @@ All notable changes are documented here. Format follows [Keep a Changelog](https
 > either, drop it; they were no-ops or contradictory.
 
 ### Fixed
+- The `port` option is now honored. mkdp initializes `g:mkdp_port` to an empty string (its signal for
+  "pick a random free port"), so the previous `== nil` guard never fired and `port` was silently
+  ignored; the bridge worked anyway, but the documented default and `:checkhealth` port readout did
+  not match reality. Empty string is now treated as unset.
 - `auto_close` now only tears down the preview when the *previewed* buffer is wiped/deleted, matched
   by buffer number. Previously, closing **any** markdown buffer killed an unrelated active preview.
 - Switched the auto-close trigger from `BufUnload` to `BufWipeout`/`BufDelete`, so `:edit` reloads of
@@ -26,9 +30,14 @@ All notable changes are documented here. Format follows [Keep a Changelog](https
 - Config validation no longer uses the table form of `vim.validate` (soft-deprecated in Neovim 0.11+
   and slated for removal). Hand-rolled checks work on every supported version with no deprecation
   warnings.
-- `:checkhealth iterm-preview` now: uses the configured `iterm_app`; reports the real
-  `g:mkdp_port`; verifies the bridge directory is writable; prints the exact `file://…` Custom URL
-  the profile needs; notes whether Neovim is running inside iTerm2; and shows the active preview.
+- `:checkhealth iterm-preview` now reads the iTerm Browser profile's actual start URL from iTerm's
+  prefs and compares it to the bridge path the plugin writes. A stray trailing dot or space (easy to
+  copy along with surrounding text) points the pane at a file that does not exist, and the only
+  symptom is a blank pane that never loads; checkhealth now flags that exact case and prints the
+  precise value the profile should hold. Uses only macOS built-ins, no external dependencies.
+- `:checkhealth iterm-preview` now: uses the configured `iterm_app`; reports the effective
+  `g:mkdp_port` (or "auto" when mkdp picks a random port); verifies the bridge directory is writable;
+  notes whether Neovim is running inside iTerm2; and shows the active preview.
 - `open_split` waits up to 15s so the one-time macOS Automation permission prompt has time to be
   accepted on first run.
 - Added unit tests for `state`; README rewritten.
