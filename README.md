@@ -1,11 +1,21 @@
+<div align="center">
+
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.harrykepler.com/logo/logo-large-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://img.harrykepler.com/logo/logo_large_light.png" />
+    <img src="https://img.harrykepler.com/logo/logo_large_light.png" alt="KK logo" width="130" />
+</picture>
+
 # iterm-preview.nvim
 
-> Live Markdown preview that renders **inside your terminal** !
+Live Markdown preview that renders **inside your terminal** !
 
 ![CI](https://github.com/Kepler2024/iTerm-preview.nvim/actions/workflows/ci.yml/badge.svg)
 ![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)
 ![macOS](https://img.shields.io/badge/macOS-13%2B-000000?logo=apple&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+</div>
 
 `:MarkdownPreview` is great, until it throws a browser window onto your desktop and your tidy
 terminal workflow falls apart. This plugin hijacks the preview hand-off from
