@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a problem with iterm-mdpreview.nvim
+description: Report a problem with iterm-preview.nvim
 labels: [bug]
 body:
   - type: input
@@ -41,7 +41,7 @@ body:
   - type: textarea
     id: health
     attributes:
-      label: Output of `:checkhealth iterm-mdpreview`
+      label: Output of `:checkhealth iterm-preview`
       render: text
     validations:
       required: true

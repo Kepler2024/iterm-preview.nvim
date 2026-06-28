@@ -1,4 +1,4 @@
-local config = require("iterm-mdpreview.config")
+local config = require("iterm-preview.config")
 
 describe("config.merge", function()
   it("returns defaults when user opts is nil", function()
@@ -9,11 +9,10 @@ describe("config.merge", function()
     assert.is_true(opts.auto_close)
   end)
 
-  it("deep-merges user overrides", function()
+  it("deep-merges user overrides while preserving siblings", function()
     local opts = config.merge({ split = { direction = "below" } })
     assert.are.equal("below", opts.split.direction)
-    -- preserves siblings
-    assert.is_nil(opts.split.size)
+    assert.are.equal("Browser", opts.profile)
   end)
 
   it("coerces port to string", function()
@@ -25,9 +24,10 @@ describe("config.merge", function()
     assert.has_error(function() config.merge({ split = { direction = "diagonal" } }) end)
   end)
 
-  it("rejects out-of-range split size", function()
-    assert.has_error(function() config.merge({ split = { size = 0 } }) end)
-    assert.has_error(function() config.merge({ split = { size = 101 } }) end)
+  it("rejects wrong-typed options", function()
+    assert.has_error(function() config.merge({ auto_close = "yes" }) end)
+    assert.has_error(function() config.merge({ iterm_app = 42 }) end)
+    assert.has_error(function() config.merge({ filetypes = "markdown" }) end)
   end)
 
   it("accepts a custom_script function", function()

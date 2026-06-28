@@ -1,26 +1,26 @@
-*iterm-mdpreview.txt*    Markdown preview rendered inside an iTerm2 browser split
+*iterm-preview.txt*    Markdown preview rendered inside an iTerm2 browser split
 
 ==============================================================================
-CONTENTS                                            *iterm-mdpreview-contents*
+CONTENTS                                            *iterm-preview-contents*
 
-  1. Introduction .............. |iterm-mdpreview-intro|
-  2. Requirements .............. |iterm-mdpreview-requirements|
-  3. Setup ..................... |iterm-mdpreview-setup|
-  4. Configuration ............. |iterm-mdpreview-config|
-  5. Commands .................. |iterm-mdpreview-commands|
-  6. Health .................... |iterm-mdpreview-health|
-  7. Troubleshooting ........... |iterm-mdpreview-troubleshooting|
-  8. Architecture .............. |iterm-mdpreview-architecture|
+  1. Introduction .............. |iterm-preview-intro|
+  2. Requirements .............. |iterm-preview-requirements|
+  3. Setup ..................... |iterm-preview-setup|
+  4. Configuration ............. |iterm-preview-config|
+  5. Commands .................. |iterm-preview-commands|
+  6. Health .................... |iterm-preview-health|
+  7. Troubleshooting ........... |iterm-preview-troubleshooting|
+  8. Architecture .............. |iterm-preview-architecture|
 
 ==============================================================================
-1. INTRODUCTION                                        *iterm-mdpreview-intro*
+1. INTRODUCTION                                        *iterm-preview-intro*
 
-iterm-mdpreview.nvim hooks into iamcco/markdown-preview.nvim's
+iterm-preview.nvim hooks into iamcco/markdown-preview.nvim's
 `g:mkdp_browserfunc` and routes the preview URL into an iTerm2 Browser-type
 split instead of the system browser.
 
 ==============================================================================
-2. REQUIREMENTS                                 *iterm-mdpreview-requirements*
+2. REQUIREMENTS                                 *iterm-preview-requirements*
 
   - macOS 13+
   - iTerm2 3.5.0+ (Browser session support)
@@ -29,15 +29,15 @@ split instead of the system browser.
   - Automation permission: Neovim/Terminal -> iTerm
 
 ==============================================================================
-3. SETUP                                                *iterm-mdpreview-setup*
+3. SETUP                                                *iterm-preview-setup*
 
 >lua
-    require("iterm-mdpreview").setup()
+    require("iterm-preview").setup()
 <
 
 Defaults work out of the box. To override, pass an opts table:
 >lua
-    require("iterm-mdpreview").setup({
+    require("iterm-preview").setup({
       profile = "Browser",
       split = { direction = "right" },
     })
@@ -48,53 +48,54 @@ One-time iTerm profile setup:
   2. Set Profile Type to Browser (3.5+)
   3. Accept the default name "Browser" (matches plugin default), or rename
      and pass `profile = "<name>"` to setup().
-  4. General -> Custom URL: file:///tmp/iterm-mdpreview.html
+  4. General -> Custom URL: file:///tmp/iterm-preview.html
 
 ==============================================================================
-4. CONFIGURATION                                       *iterm-mdpreview-config*
+4. CONFIGURATION                                       *iterm-preview-config*
 
 Default options:
 >lua
     {
       port = "8089",
-      split = { direction = "right", size = nil },
+      split = { direction = "right" },
       auto_close = true,
-      reuse_split = false,
       notify_level = vim.log.levels.INFO,
       iterm_app = "iTerm",
       profile = "Browser",
       filetypes = { "markdown" },
-      bridge_html = "/tmp/iterm-mdpreview.html",
+      bridge_html = "/tmp/iterm-preview.html",
       custom_script = nil,
     }
 <
 
 `split.direction`   right | left | below | above
-`split.size`        nil or number in (0, 100]; percent of parent pane
+`auto_close`        close the pane when the previewed buffer is closed
 `profile`           iTerm Browser-type profile name (default: "Browser")
 `bridge_html`       meta-refresh HTML path; must match profile's Custom URL
 `custom_script`     function(url) -> AppleScript string; overrides bundled script
 
 ==============================================================================
-5. COMMANDS                                          *iterm-mdpreview-commands*
+5. COMMANDS                                          *iterm-preview-commands*
 
-  *:ItermMdPreview*      Open markdown preview in iTerm split
-  *:ItermMdPreviewStop*  Close split and stop the preview server
+Primary commands:
+  *:ItermMdPreview*      Open markdown preview in an iTerm split
+  *:ItermMdPreviewStop*  Close the split and stop the preview server
 
-  *:MarkdownPreview*     Upstream command; rendered into the iTerm split
-  *:MarkdownPreviewStop* Overridden: closes the iTerm split AND stops mkdp
+Aliases (mkdp's own commands, transparently rerouted / overridden):
+  *:MarkdownPreview*     Same as :ItermMdPreview
+  *:MarkdownPreviewStop* Same as :ItermMdPreviewStop
 
 ==============================================================================
-6. HEALTH                                              *iterm-mdpreview-health*
+6. HEALTH                                              *iterm-preview-health*
 
 >vim
-    :checkhealth iterm-mdpreview
+    :checkhealth iterm-preview
 <
 
 Verifies platform, osascript, iTerm version, mkdp presence, and config state.
 
 ==============================================================================
-7. TROUBLESHOOTING                          *iterm-mdpreview-troubleshooting*
+7. TROUBLESHOOTING                          *iterm-preview-troubleshooting*
 
 "osascript exited 1: Not authorized to send Apple events to iTerm."
   Grant Automation permission: System Settings -> Privacy & Security ->
@@ -112,7 +113,7 @@ Can't connect to server
   mkdp's build step.
 
 ==============================================================================
-8. ARCHITECTURE                                  *iterm-mdpreview-architecture*
+8. ARCHITECTURE                                  *iterm-preview-architecture*
 
 Two invariants the codebase depends on:
 
@@ -124,6 +125,6 @@ Two invariants the codebase depends on:
 2. The :MarkdownPreviewStop override MUST be installed as buffer-local
    (nvim_buf_create_user_command), not global. mkdp itself registers a
    buffer-local version that takes precedence over any global override.
-   See lua/iterm-mdpreview/init.lua override_for_buffer().
+   See lua/iterm-preview/init.lua override_for_buffer().
 
 vim:tw=78:ts=8:ft=help:norl:

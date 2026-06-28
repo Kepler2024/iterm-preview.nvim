@@ -1,6 +1,6 @@
 local M = {}
 
-local PREFIX = "[iterm-mdpreview] "
+local PREFIX = "[iterm-preview] "
 local level = vim.log.levels.INFO
 
 function M.set_level(lvl)
@@ -9,9 +9,7 @@ end
 
 local function emit(msg, lvl)
   if lvl < level then return end
-  vim.schedule(function()
-    vim.notify(PREFIX .. msg, lvl)
-  end)
+  vim.schedule(function() vim.notify(PREFIX .. msg, lvl) end)
 end
 
 function M.debug(msg) emit(msg, vim.log.levels.DEBUG) end

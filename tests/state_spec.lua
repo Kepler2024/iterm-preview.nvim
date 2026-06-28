@@ -1,0 +1,33 @@
+local state = require("iterm-preview.state")
+
+describe("state", function()
+  before_each(function() state.clear() end)
+
+  it("starts empty", function()
+    assert.is_false(state.has_session())
+    assert.is_nil(state.session_id)
+    assert.is_nil(state.bufnr)
+  end)
+
+  it("tracks session id, url and buffer together", function()
+    state.set("w0t0p1", "http://localhost:8089/page/1", 7)
+    assert.is_true(state.has_session())
+    assert.are.equal("w0t0p1", state.session_id)
+    assert.are.equal("http://localhost:8089/page/1", state.last_url)
+    assert.are.equal(7, state.bufnr)
+  end)
+
+  it("clear() resets everything", function()
+    state.set("w0t0p1", "http://x", 3)
+    state.clear()
+    assert.is_false(state.has_session())
+    assert.is_nil(state.session_id)
+    assert.is_nil(state.last_url)
+    assert.is_nil(state.bufnr)
+  end)
+
+  it("treats an empty session id as no active session", function()
+    state.set("", "http://x", 1)
+    assert.is_false(state.has_session())
+  end)
+end)

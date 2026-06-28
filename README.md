@@ -1,20 +1,32 @@
-# iterm-mdpreview.nvim
+# iterm-preview.nvim
 
-Render `:MarkdownPreview` inside an iTerm2 browser split instead of a system browser window. Built on top of [`iamcco/markdown-preview.nvim`](https://github.com/iamcco/markdown-preview.nvim).
+> Live Markdown preview that renders **inside your terminal** !
 
-> Status: **alpha (v0.1)**. macOS + iTerm2 3.5+ only.
+![CI](https://github.com/Kepler2024/iTerm-preview.nvim/actions/workflows/ci.yml/badge.svg)
+![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)
+![macOS](https://img.shields.io/badge/macOS-13%2B-000000?logo=apple&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-<!-- Add a short GIF here before tagging v0.1.0 (recommended: vhs or asciinema → mp4 → gif). -->
+`:MarkdownPreview` is great, until it throws a browser window onto your desktop and your tidy
+terminal workflow falls apart. This plugin hijacks the preview hand-off from
+[`iamcco/markdown-preview.nvim`](https://github.com/iamcco/markdown-preview.nvim) and routes it into a
+right-hand **iTerm2 browser pane** instead. Same live reload, same renderer, but minus the window juggling.
+
+<p align="center">
+  <img src="assets/preview.png" alt="Neovim on the left, live Markdown preview in an iTerm2 browser split on the right" width="100%"><br>
+  <sub>Neovim on the left, the live preview in an iTerm2 browser split on the right.</sub>
+</p>
 
 ---
 
-## Why
+## Why you'll like it
 
-The default `:MarkdownPreview` flow throws a Safari/Chrome window onto your desktop, breaking the "everything inside the terminal" flow. This plugin hijacks mkdp's preview hand-off and opens the live preview in a right-side iTerm browser pane so:
-
-- Focus stays in Neovim — no app switch, no window juggling.
-- The preview moves with your iTerm window (Space, full-screen, tiling).
-- `:MarkdownPreviewStop` and closing the markdown buffer both close the pane automatically.
+- 🪟 **No more stray browser windows.** The preview is a pane, not an app you have to alt-tab to.
+- 🎯 **Focus stays in Neovim.** The split opens, then hands the keyboard right back to your editor.
+- 🧲 **It travels with your terminal.** Move iTerm across Spaces, go full-screen, tile it, and the preview
+  comes along, because it *is* iTerm.
+- 🧹 **It cleans up after itself.** `:ItermMdPreviewStop`, or just closing the markdown buffer,
+  closes the pane *and* stops the preview server. No orphaned tabs, no zombie node processes.
 
 ---
 
@@ -23,25 +35,25 @@ The default `:MarkdownPreview` flow throws a Safari/Chrome window onto your desk
 | | |
 |---|---|
 | OS | macOS 13+ |
-| iTerm2 | **3.5.0+** (Browser session support) |
-| Neovim | 0.10+ |
+| iTerm2 | **3.5.0+** 
+| Neovim | 0.10+ 
 | Dependency | [`iamcco/markdown-preview.nvim`](https://github.com/iamcco/markdown-preview.nvim) |
-| Permissions | macOS Automation: Neovim/Terminal → iTerm (granted on first run) |
+ 
 
 ---
 
-## Installation
+## Install
 
 ### lazy.nvim
 
 ```lua
 {
-  "<your-github>/iterm-mdpreview.nvim",
+  "Kepler2024/iTerm-preview.nvim",
   dependencies = {
     { "iamcco/markdown-preview.nvim", build = "cd app && npm install" },
   },
   ft = "markdown",
-  opts = {},  -- defaults work out of the box once the iTerm profile exists
+  opts = {}, -- defaults work out of the box once the iTerm profile exists
 }
 ```
 
@@ -49,9 +61,9 @@ The default `:MarkdownPreview` flow throws a Safari/Chrome window onto your desk
 
 ```lua
 use {
-  "<your-github>/iterm-mdpreview.nvim",
+  "Kepler2024/iTerm-preview.nvim",
   requires = { { "iamcco/markdown-preview.nvim", run = "cd app && npm install" } },
-  config = function() require("iterm-mdpreview").setup() end,
+  config = function() require("iterm-preview").setup() end,
 }
 ```
 
@@ -59,130 +71,84 @@ use {
 
 ```vim
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
-Plug '<your-github>/iterm-mdpreview.nvim'
+Plug 'Kepler2024/iTerm-preview.nvim'
 
-" then in init.lua / after-plug block:
-lua require('iterm-mdpreview').setup()
+" then, after plugins load:
+lua require('iterm-preview').setup()
 ```
 
 ---
 
 ## One-time iTerm profile setup
 
-The plugin opens the preview in an iTerm **Browser-type** profile. Create one:
+The preview pane is just an iTerm **Browser-type** profile. You create it once:
 
-1. iTerm → Settings → Profiles → **+** (new profile)
-2. Set **Profile Type** to **Browser** (iTerm 3.5+)
-3. Leave the name as **`Browser`** — iTerm's default, and what this plugin expects.
-   *(If you rename it, pass `profile = "<your name>"` to `setup()`.)*
-4. Under **General → Custom URL**, set `file:///tmp/iterm-mdpreview.html`.
-   This is the bridge file the plugin writes a meta-refresh into; the profile loading it is how the preview URL actually reaches the pane.
-5. Run `:checkhealth iterm-mdpreview` to confirm everything is wired.
+1. **iTerm → Settings → Profiles → `+`** (create new profile).
+2. Set **Profile Type → Browser**.
+3. Name it **`Browser`** (default). 
+4. Under **General → Custom URL**, paste `file:///tmp/iterm-preview.html`.
+5. Run **`:checkhealth iterm-preview`** 
 
-First `:MarkdownPreview` will trigger a macOS Automation permission prompt — allow Neovim (or your terminal host) to control iTerm.
+First `:ItermMdPreview` triggers a one-time macOS Automation prompt. Click **OK** to let your
+terminal drive iTerm.
+
+> Not sure you got step 4 right? `:checkhealth iterm-preview` prints the precise
+> `file://…` string your profile should use. Copy it from there.
+
+---
+
+## Usage
+
+```vim
+:ItermMdPreview        " preview the current buffer in an iTerm split
+:ItermMdPreviewStop    " close the pane and stop the server
+```
+
+Keymaps Config:
+```lua
+vim.keymap.set("n", "<leader>mp", "<cmd>ItermMdPreview<cr>",     { desc = "Markdown preview (iTerm)" })
+vim.keymap.set("n", "<leader>ms", "<cmd>ItermMdPreviewStop<cr>", { desc = "Stop markdown preview" })
+```
+
+| Command | What it does |
+|---|---|
+| `:ItermMdPreview` | **Open** the preview in an iTerm split (the command to reach for) |
+| `:ItermMdPreviewStop` | **Close** the split *and* stop the preview server |
+| `:MarkdownPreview` | Alias: mkdp's own command, transparently rerouted into the split |
+| `:MarkdownPreviewStop` | Alias: overridden so it closes the split *and* stops the server |
+| `:checkhealth iterm-preview` | Diagnose platform, iTerm version, automation permission, profile wiring |
 
 ---
 
 ## Configuration
 
+Everything below is the default; call `setup()` with only what you want to change.
+
 ```lua
-require("iterm-mdpreview").setup({
+require("iterm-preview").setup({
   port = "8089",                              -- mkdp HTTP server port
   split = {
     direction = "right",                      -- right | left | below | above
-    size = nil,                               -- percent (1-100); nil = iTerm default
   },
-  auto_close = true,                          -- close split on BufWipeout/BufUnload
-  reuse_split = false,                        -- v0.1: always opens a new split
+  auto_close = true,                          -- close the pane when the previewed buffer is closed
   notify_level = vim.log.levels.INFO,
   iterm_app = "iTerm",                        -- AppleScript application name
   profile = "Browser",                        -- iTerm Browser-type profile name
-  filetypes = { "markdown" },                 -- passed to mkdp_filetypes
-  bridge_html = "/tmp/iterm-mdpreview.html",  -- where meta-refresh is written
-  custom_script = nil,                        -- function(url) -> AppleScript (escape hatch)
+  filetypes = { "markdown" },                 -- forwarded to g:mkdp_filetypes
+  bridge_html = "/tmp/iterm-preview.html",  -- meta-refresh bridge; must match the profile's Custom URL
+  custom_script = nil,                        -- function(url) -> AppleScript string (full escape hatch)
 })
 ```
 
 ---
 
-## Commands
+## Special thanks
 
-| Command | What it does |
-|---|---|
-| `:MarkdownPreview` | Upstream mkdp command; preview routes into the iTerm split via our `browserfunc` |
-| `:MarkdownPreviewStop` | Overridden by this plugin: closes the iTerm split *and* stops mkdp's server |
-| `:ItermMdPreview` | Alias for `:MarkdownPreview` |
-| `:ItermMdPreviewStop` | Alias for `:MarkdownPreviewStop` |
-| `:checkhealth iterm-mdpreview` | Diagnose platform, iTerm version, automation permission, mkdp presence |
+With thanks to the projects this plugin plugs into:
 
----
-
-## How it works
-
-```
-:MarkdownPreview
-  └─► mkdp starts HTTP server on :8089
-        └─► mkdp calls g:mkdp_browserfunc (= ItermMdpreviewBrowserFunc)
-              └─► Lua: iterm.open_split(url)
-                    └─► osascript scripts/open_split.applescript
-                          ├─► writes meta-refresh HTML to bridge_html
-                          ├─► tells iTerm to split with the Browser profile,
-                          │   which loads bridge_html and is redirected to <url>
-                          └─► returns session id → stored in Lua state
-
-:MarkdownPreviewStop
-  └─► overridden buffer-local command → Lua: stop()
-        ├─► iterm.close_split(state.session_id)  -- osascript closes the pane
-        └─► mkdp#util#stop_preview()             -- shuts the mkdp server
-```
-
----
-
-## Troubleshooting
-
-**`osascript exited 1: Not authorized to send Apple events to iTerm.`**
-First run triggers a macOS Automation prompt; if you missed or denied it, re-grant via *System Settings → Privacy & Security → Automation*, then enable Neovim (or your terminal host) → iTerm.
-
-**Split opens but pane is empty / shows `iterm2-about:error`**
-Either the profile is not a Browser-type, or its Custom URL doesn't match `bridge_html` (default `/tmp/iterm-mdpreview.html`). Double-check both.
-
-**`:MarkdownPreviewStop` stops the server but the split stays open**
-You probably installed an older version of this plugin (pre-buffer-local override). Update to v0.1.0+; mkdp creates a *buffer-local* `:MarkdownPreviewStop`, which only our buffer-local override can beat.
-
-**`Can't connect to server` in the browser pane**
-mkdp's HTTP server isn't running, or it bound to a non-loopback address. Check with `lsof -i :8089`. If empty, re-run mkdp's build step (`cd app && npm install` inside `markdown-preview.nvim`).
-
-**Port 8089 in use**
-`setup({ port = "8090" })` — port is forwarded to `g:mkdp_port`.
-
----
-
-## Architecture invariants
-
-Two non-obvious decisions inside the codebase that future contributors should keep:
-
-1. **`scripts/*.applescript` wraps iTerm calls in `using terms from application "iTerm"`.** AppleScript only loads an app's scripting dictionary at *compile time* if the app name in `tell application "..."` is a string literal. Because we pass `iterm_app` as a parameter (variable), the dictionary won't load without `using terms from`, and any iTerm-specific verb (`split vertically`, `with profile`, `create window`) blows up with `(-2741) Expected end of line but found class name`.
-
-2. **`:MarkdownPreviewStop` is overridden as a buffer-local command, not a global one.** mkdp registers its `:MarkdownPreviewStop` with `command! -buffer` on every markdown buffer; buffer-local commands shadow global ones, so a global `nvim_create_user_command` override silently loses. The plugin uses `nvim_buf_create_user_command` on every markdown buffer (via `FileType`/`BufEnter` autocmds plus a `vim.schedule` deferral so it runs *after* mkdp's handler in the same event chain).
-
-If you simplify either of these, run the manual QA matrix in [CONTRIBUTING.md](./CONTRIBUTING.md) before merging — these regressions are silent until exercised.
-
----
-
-## Roadmap
-
-- [ ] `reuse_split = true`: navigate the existing pane instead of opening a new one
-- [ ] Ship an importable iTerm `.json` profile so step "one-time setup" becomes a single click
-- [ ] Health check actually performs a `split + close` round-trip
-- [ ] Optional iTerm2 Python API backend for finer control
-
----
-
-## Credits
-
-- [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) — handles all the rendering and live reload heavy lifting.
-- iTerm2's [browser session support](https://iterm2.com/) in 3.5+ — the reason this plugin can exist.
+- **[markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)** for the Markdown rendering and live reload.
+- **[iTerm2](https://iterm2.com/)** (3.5+) for the Browser-type split the preview runs in.
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+[MIT](./LICENSE).
