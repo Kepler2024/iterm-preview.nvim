@@ -9,7 +9,7 @@ If this PR touches AppleScript, command registration, or the open/close lifecycl
 - [ ] `:MarkdownPreview` opens the iTerm Browser split
 - [ ] `:MarkdownPreviewStop` closes the split **and** stops mkdp's server
 - [ ] `:verbose command MarkdownPreviewStop` shows our buffer-local override winning
-- [ ] `:checkhealth iterm-mdpreview` is green
+- [ ] `:checkhealth iterm-preview` is green
 - [ ] Tested on iTerm version: ______ / Neovim version: ______
 
 ## Checklist

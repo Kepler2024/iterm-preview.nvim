@@ -3,7 +3,7 @@ local M = {}
 local function ensure_vim_func()
   vim.cmd([[
     function! ItermMdpreviewBrowserFunc(url) abort
-      call v:lua.require'iterm-mdpreview'.open_url(a:url)
+      call v:lua.require'iterm-preview'.open_url(a:url)
     endfunction
   ]])
 end

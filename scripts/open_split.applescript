@@ -1,36 +1,31 @@
 -- open_split.applescript
 --
 -- Args:
---   1: target URL                  (required, e.g. http://localhost:8089/page/...)
---   2: split direction             (right|left|below|above)
---   3: iTerm profile name          (must exist; "" -> "Browser")
---   4: bridge HTML path            (absolute path; written before split)
---   5: iTerm app name              ("" -> "iTerm")
+--   1: split direction    (right|left|below|above)
+--   2: iTerm profile name  (must exist; "" -> "Browser")
+--   3: iTerm app name      ("" -> "iTerm")
 --
--- How the URL actually lands in the new pane:
---   We write a meta-refresh HTML to <bridge HTML path> that redirects to the
---   target URL. The user's iTerm Browser profile must have its Custom URL set
---   to file://<bridge HTML path>. When we split with that profile, the new
---   browser session loads its home URL, which redirects to the live preview.
+-- The target URL is NOT passed here. Lua writes a meta-refresh bridge file and
+-- the chosen iTerm Browser profile loads it via its Custom URL (file://...),
+-- which redirects the new pane to the live preview. This script only performs
+-- the split and returns the new session id.
 --
---   (iTerm's AppleScript dictionary does not currently expose direct URL
---   navigation on browser sessions, so the bridge HTML is the load-bearing
---   mechanism rather than a fallback.)
+-- After splitting, focus is returned to the originally-active session so the
+-- editor keeps the keyboard, the whole point of previewing in-terminal.
+--
+-- `using terms from application "iTerm"` is load-bearing: AppleScript only
+-- loads an app's scripting dictionary at compile time when the app name is a
+-- string literal. Because `itermApp` is a runtime variable, iTerm verbs
+-- (split vertically, with profile, create window) would otherwise fail with
+-- error -2741. Do not remove it.
 
 on run argv
-    set targetURL to item 1 of argv
-    set splitDir to item 2 of argv
-    set profileName to item 3 of argv
-    set bridgeFile to item 4 of argv
-    set itermApp to item 5 of argv
+    set splitDir to item 1 of argv
+    set profileName to item 2 of argv
+    set itermApp to item 3 of argv
 
     if itermApp = "" then set itermApp to "iTerm"
     if profileName = "" then set profileName to "Browser"
-
-    if bridgeFile is not "" then
-        set htmlContent to "<!DOCTYPE html><meta http-equiv=\"refresh\" content=\"0; url=" & targetURL & "\">"
-        do shell script "printf '%s' " & quoted form of htmlContent & " > " & quoted form of bridgeFile
-    end if
 
     set newSessionID to ""
     using terms from application "iTerm"
@@ -41,6 +36,7 @@ on run argv
             end if
 
             tell current window
+                set prevSession to current session
                 tell current session
                     if splitDir is "below" or splitDir is "above" then
                         set newSession to (split horizontally with profile profileName)
@@ -50,6 +46,7 @@ on run argv
                 end tell
 
                 set newSessionID to (id of newSession) as text
+                tell prevSession to select
             end tell
         end tell
     end using terms from

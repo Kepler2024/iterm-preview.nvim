@@ -13,4 +13,4 @@ check:
 	luacheck lua plugin --no-unused-args --globals vim
 
 clean:
-	rm -f /tmp/iterm-mdpreview.html
+	rm -f /tmp/iterm-preview.html
