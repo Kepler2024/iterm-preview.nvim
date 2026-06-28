@@ -35,21 +35,21 @@ right-hand **iTerm2 browser pane** instead. Same live reload, same renderer, but
   <tr>
     <td align="center" width="50%">
       <img src="assets/live-editing.gif" alt="Edits in Neovim reflected live in the preview pane" width="100%"><br>
-      <sub><b>Live editing</b> — type in Neovim, the preview updates instantly.</sub>
+      <sub><b>Live editing</b> -- type in Neovim, the preview updates instantly.</sub>
     </td>
     <td align="center" width="50%">
       <img src="assets/scroll-in-neovim.gif" alt="Scrolling in Neovim keeps the preview in sync" width="100%"><br>
-      <sub><b>Scroll sync</b> — move through the buffer and the preview follows.</sub>
+      <sub><b>Scroll sync</b> -- move through the buffer and the preview follows.</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
       <img src="assets/scroll.gif" alt="Scrolling the preview pane" width="100%"><br>
-      <sub><b>Scroll the preview</b> — read long docs right in the split.</sub>
+      <sub><b>Scroll the preview</b> -- read long docs right in the split.</sub>
     </td>
     <td align="center" width="50%">
       <img src="assets/stop.gif" alt="Stopping the preview closes the pane and server" width="100%"><br>
-      <sub><b>Clean teardown</b> — <code>:ItermMdPreviewStop</code> closes the pane and the server.</sub>
+      <sub><b>Clean teardown</b> -- <code>:ItermMdPreviewStop</code> closes the pane and server.</sub>
     </td>
   </tr>
 </table>
