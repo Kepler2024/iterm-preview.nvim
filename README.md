@@ -49,7 +49,7 @@ right-hand **iTerm2 browser pane** instead. Same live reload, same renderer, but
     </td>
     <td align="center" width="50%">
       <img src="assets/stop.gif" alt="Stopping the preview closes the pane and server" width="100%"><br>
-      <sub><b>Clean teardown</b> -- <code>:ItermMdPreviewStop</code> closes the pane and server.</sub>
+      <sub><b>Clean teardown</b> -- close the pane and the server.</sub>
     </td>
   </tr>
 </table>
