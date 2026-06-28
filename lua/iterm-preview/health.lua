@@ -16,6 +16,29 @@ local function parse_version(v)
   return tonumber(major), tonumber(minor)
 end
 
+-- Reads the iTerm2 Browser profile's start URL straight from iTerm's prefs so
+-- checkhealth can compare it to the bridge path the plugin actually writes. A
+-- single stray character here (a trailing dot copied along with a sentence, a
+-- leftover space) points the pane at a file that does not exist, and the only
+-- visible symptom is a blank pane that never loads. Uses only macOS built-ins
+-- (defaults, plutil) plus vim.json; no external dependencies.
+--
+-- Returns status, url where status is "found" | "not_found" | "unknown".
+local function profile_initial_url(profile_name)
+  local out = vim.fn.system({
+    "bash",
+    "-c",
+    'defaults export com.googlecode.iterm2 - | plutil -extract "New Bookmarks" json -o - -',
+  })
+  if vim.v.shell_error ~= 0 or out == nil or out == "" then return "unknown", nil end
+  local okj, arr = pcall(vim.json.decode, out)
+  if not okj or type(arr) ~= "table" then return "unknown", nil end
+  for _, b in ipairs(arr) do
+    if type(b) == "table" and b.Name == profile_name then return "found", b["Initial URL"] end
+  end
+  return "not_found", nil
+end
+
 function M.check()
   start("iterm-preview")
 
@@ -75,7 +98,13 @@ function M.check()
 
   if opts then
     ok("setup() called")
-    info("port: " .. tostring(vim.g.mkdp_port or opts.port))
+    local port = vim.g.mkdp_port
+    if port == nil or port == "" then port = opts.port end
+    if port == nil or port == "" then
+      info("port: auto (mkdp picks a free port each run)")
+    else
+      info("port: " .. tostring(port))
+    end
     info("split direction: " .. opts.split.direction)
     info("profile: " .. (opts.profile or "<default>"))
     if opts.bridge_html and opts.bridge_html ~= "" then
@@ -85,13 +114,49 @@ function M.check()
       else
         warn("bridge file directory not writable: " .. dir .. " (the preview pane will stay empty)")
       end
-      info(
-        string.format(
-          "the '%s' profile must be Browser-type with Custom URL = file://%s",
-          opts.profile or "Browser",
-          opts.bridge_html
+      local profile = opts.profile or "Browser"
+      local expected = "file://" .. opts.bridge_html
+      local status, url = profile_initial_url(profile)
+      if status == "found" then
+        if url == expected then
+          ok(string.format("profile '%s' URL points at the bridge (%s)", profile, expected))
+        elseif type(url) == "string" and (url:gsub("[%.%s]+$", "")) == expected then
+          err(
+            string.format(
+              "profile '%s' URL is %q, which has a stray trailing character, so the pane loads a "
+                .. "file that does not exist (blank pane). Set it to exactly: %s",
+              profile,
+              url,
+              expected
+            )
+          )
+        else
+          err(
+            string.format(
+              "profile '%s' URL is %q but should be exactly: %s",
+              profile,
+              tostring(url),
+              expected
+            )
+          )
+        end
+      elseif status == "not_found" then
+        warn(
+          string.format(
+            "no iTerm profile named '%s' found; create a Browser-type profile whose URL is exactly: %s",
+            profile,
+            expected
+          )
         )
-      )
+      else
+        info(
+          string.format(
+            "set the '%s' Browser profile's URL to exactly: %s (could not read iTerm prefs to verify)",
+            profile,
+            expected
+          )
+        )
+      end
     else
       info("bridge_html disabled")
     end
