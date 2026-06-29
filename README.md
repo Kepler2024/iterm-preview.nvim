@@ -123,7 +123,7 @@ The preview pane is just an iTerm **Browser-type** profile. You create it once:
 1. **iTerm → Settings → Profiles → `+`** (create new profile).
 2. Set **Profile Type → Browser**.
 3. Name it **`Browser`** (default).
-4. Under **General → Custom URL**, paste this exact value, with no trailing space or period:
+4. Under **Initial URL**, paste this exact value, with no trailing space or period:
 
    ```
    file:///tmp/iterm-preview.html
