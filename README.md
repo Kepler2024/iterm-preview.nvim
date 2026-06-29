@@ -193,6 +193,16 @@ With thanks to the projects this plugin plugs into:
 - **[markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)** for the Markdown rendering and live reload.
 - **[iTerm2](https://iterm2.com/)** (3.5+) for the Browser-type split the preview runs in.
 
+## Buy me a coffee
+
+If this plugin saves you some alt-tabbing, consider buying me a coffee. Thank you! ☕
+
+<p align="center">
+  <img src="assets/donate.png" alt="Donate via PayPal, WeChat, or Alipay" width="100%">
+</p>
+
+---
+
 ## License
 
 [MIT](./LICENSE).
