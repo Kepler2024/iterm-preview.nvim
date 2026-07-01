@@ -23,7 +23,7 @@ terminal workflow falls apart. This plugin hijacks the preview hand-off from
 right-hand **iTerm2 browser pane** instead. Same live reload, same renderer, but minus the window juggling.
 
 <p align="center">
-  <img src="assets/preview.png" alt="Neovim on the left, live Markdown preview in an iTerm2 browser split on the right" width="100%"><br>
+  <img src="assets/preview.gif" alt="Neovim on the left, live Markdown preview in an iTerm2 browser split on the right" width="100%"><br>
   <sub>Neovim on the left, the live preview in an iTerm2 browser split on the right.</sub>
 </p>
 
